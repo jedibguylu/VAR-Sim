@@ -21,6 +21,8 @@
   <button onclick="playHalf()">Play at 0.5x</button>
   <button onclick="rewind()">Rewind 3s</button>
   <button onclick="replayClip()">Replay</button>
+  <button onclick="prevFrame()">⏪ Prev Frame</button>
+  <button onclick="nextFrame()">⏩ Next Frame</button>
 
   <br><br>
   <input type="text" id="userCall" placeholder="Enter your decision (e.g., red card for green)">
@@ -30,7 +32,7 @@
   <p id="feedback"></p>
 
   <script>
-    const clips = [
+    const originalClips = [
       {
         src: "https://files.catbox.moe/e9g8y1.mp4",
         correctCalls: ["yellow card for keeper", "goal"],
@@ -52,6 +54,16 @@
         skipScoring: false
       }
     ];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    const clips = [...originalClips];
+    shuffle(clips);
 
     let currentClip = 0;
     let score = 0;
@@ -94,6 +106,18 @@
       video.currentTime = 0;
       video.playbackRate = 1.0;
       video.play();
+    }
+
+    function prevFrame() {
+      if (!video.paused) return;
+      const fps = 30; // estimate
+      video.currentTime = Math.max(0, video.currentTime - 1 / fps);
+    }
+
+    function nextFrame() {
+      if (!video.paused) return;
+      const fps = 30; // estimate
+      video.currentTime = Math.min(video.duration, video.currentTime + 1 / fps);
     }
 
     function submitCall() {
