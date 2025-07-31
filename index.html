@@ -3,90 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VAR Simulator</title>
+  <title>VAR Sim</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #111;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
-    video {
-      max-width: 100%;
-      border: 4px solid #fff;
-      margin-bottom: 1rem;
-    }
-    .controls, .input-decision {
-      margin: 1rem;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      background: #444;
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #666;
-    }
-    input[type="text"] {
-      padding: 0.5rem;
-      width: 300px;
-      border-radius: 4px;
-      border: none;
-    }
-    .score {
-      margin-top: 1rem;
-      font-size: 1.5rem;
-      color: lime;
-    }
-    .points {
-      margin-top: 0.5rem;
-      font-size: 1.2rem;
-      color: gold;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #111; color: #fff; }
+    video { width: 100%; max-width: 720px; display: block; margin-bottom: 10px; }
+    input[type="text"] { width: 100%; padding: 10px; margin-bottom: 10px; font-size: 16px; }
+    button { padding: 10px 15px; margin: 5px; font-size: 16px; cursor: pointer; }
+    #pointsDisplay { font-size: 20px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
-  <h1>VAR Decision Simulator</h1>
-
-  <video id="clip" width="640" controls>
-    <source id="videoSource" src="" type="video/mp4">
-    Your browser does not support HTML5 video.
-  </video>
-
-  <div class="controls">
-    <button onclick="playQuarterSpeed()">Play 0.25x</button>
-    <button onclick="playSlow()">Play 0.5x</button>
-    <button onclick="playNormal()">Play 1x</button>
-    <button onclick="rewind()">⏪ Rewind 3s</button>
-    <button onclick="replay()">🔁 Replay</button>
-  </div>
-
-  <div class="input-decision">
-    <input id="decisionInput" type="text" placeholder="Type your decision here (e.g. 'red card for green, yellow for grey')" />
-    <button onclick="submitDecision()">Submit</button>
-  </div>
-
-  <div class="score" id="result"></div>
-  <div class="points" id="pointsDisplay">Points: 0</div>
+  <h1>VAR Review Simulator</h1>
+  <div id="pointsDisplay">Points: 0</div>
+  <video id="clip" muted></video>
+  <br />
+  <button onclick="playClip()">Play</button>
+  <button onclick="playClip(0.25)">Play 0.25x</button>
+  <button onclick="pauseClip()">Pause</button>
+  <br /><br />
+  <input id="inputCall" type="text" placeholder="Type your call here... (e.g., 'red card for green')" />
+  <button onclick="submitCall()">Submit Call</button>
 
   <script>
-    const video = document.getElementById('clip');
-    const videoSource = document.getElementById('videoSource');
-    const result = document.getElementById("result");
-    const decisionInput = document.getElementById("decisionInput");
-    const pointsDisplay = document.getElementById("pointsDisplay");
-
-    const clips = [ //               https://catbox.moe/
+    const clips = [
       {
         src: "https://files.catbox.moe/e9g8y1.mp4",
         correctCalls: ["yellow card for keeper", "goal"],
@@ -109,77 +48,48 @@
       }
     ];
 
-    let currentCalls = [];
-    let totalPoints = 0;
-    let skipScoring = false;
+    let currentClipIndex = 0;
+    let points = 0;
+    const video = document.getElementById("clip");
+    const input = document.getElementById("inputCall");
+    const pointsDisplay = document.getElementById("pointsDisplay");
 
-    function loadRandomClip() {
-      const random = clips[Math.floor(Math.random() * clips.length)];
-      videoSource.src = random.src;
+    function loadClip() {
+      const clip = clips[currentClipIndex];
+      video.src = clip.src;
       video.load();
-      currentCalls = random.correctCalls.map(call => call.toLowerCase());
-      skipScoring = random.skipScoring;
-      result.textContent = "";
-      decisionInput.value = "";
     }
 
-    function playQuarterSpeed() {
-      video.playbackRate = 0.25;
+    function playClip(speed = 1.0) {
+      video.playbackRate = speed;
       video.play();
     }
 
-    function playSlow() {
-      video.playbackRate = 0.5;
-      video.play();
+    function pauseClip() {
+      video.pause();
     }
 
-    function playNormal() {
-      video.playbackRate = 1.0;
-      video.play();
-    }
+    function submitCall() {
+      const call = input.value.toLowerCase().trim();
+      input.value = "";
+      const clip = clips[currentClipIndex];
 
-    function rewind() {
-      video.currentTime = Math.max(0, video.currentTime - 3);
-    }
-
-    function replay() {
-      video.currentTime = 0;
-      video.play();
-    }
-
-    function submitDecision() {
-      const input = decisionInput.value.trim().toLowerCase();
-      if (!input) {
-        result.textContent = "❗ Please enter a decision.";
-        return;
-      }
-
-      if (skipScoring) {
-        result.textContent = "🔍 This clip is open to interpretation. No points gained or lost.";
-        return;
-      }
-
-      let matched = 0;
-      currentCalls.forEach(call => {
-        if (input.includes(call)) matched++;
-      });
-
-      const total = currentCalls.length;
-      const score = Math.round((matched / total) * 100);
-
-      if (matched === total) {
-        result.textContent = `✅ Fully Correct! +${score} Points`;
-      } else if (matched > 0) {
-        result.textContent = `🟡 Partially Correct! +${score} Points`;
+      if (!clip.skipScoring) {
+        const matched = clip.correctCalls.filter(c => call.includes(c.toLowerCase()));
+        const accuracy = matched.length / clip.correctCalls.length;
+        const awarded = 100 * accuracy;
+        points += awarded;
+        alert(`You got ${awarded} points (${Math.round(accuracy * 100)}% correct)`);
       } else {
-        result.textContent = `❌ Incorrect. Correct answer: ${currentCalls.join(" AND ")}`;
+        alert("This clip has no scoring — opinion-based.");
       }
 
-      totalPoints += score;
-      pointsDisplay.textContent = `Points: ${totalPoints}`;
+      currentClipIndex = (currentClipIndex + 1) % clips.length;
+      pointsDisplay.textContent = `Points: ${Math.round(points)}`;
+      loadClip();
     }
 
-    window.onload = loadRandomClip;
+    loadClip();
   </script>
 </body>
 </html>
