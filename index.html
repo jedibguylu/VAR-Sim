@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VAR Sim</title>
+  <meta charset="UTF-8">
+  <title>VAR Decision Simulator</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #111; color: #fff; }
-    video { width: 100%; max-width: 720px; display: block; margin-bottom: 10px; }
-    input[type="text"] { width: 100%; padding: 10px; margin-bottom: 10px; font-size: 16px; }
-    button { padding: 10px 15px; margin: 5px; font-size: 16px; cursor: pointer; }
-    #pointsDisplay { font-size: 20px; margin-bottom: 10px; }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #111; color: white; }
+    video { width: 100%; max-width: 800px; margin-bottom: 10px; border: 2px solid #ccc; }
+    input[type="text"] { width: 60%; padding: 10px; }
+    button { padding: 10px 15px; margin: 5px; }
+    #score { font-size: 20px; margin-top: 15px; }
   </style>
 </head>
 <body>
-  <h1>VAR Review Simulator</h1>
-  <div id="pointsDisplay">Points: 0</div>
-  <video id="clip" muted></video>
-  <br />
+  <h1>VAR Decision Simulator</h1>
+  <video id="clip" controls muted></video><br>
+
   <button onclick="playClip()">Play</button>
-  <button onclick="playClip(0.25)">Play 0.25x</button>
   <button onclick="pauseClip()">Pause</button>
-  <br /><br />
-  <input id="inputCall" type="text" placeholder="Type your call here... (e.g., 'red card for green')" />
+  <button onclick="playSlow()">Play at 0.25x</button>
+  <button onclick="playHalf()">Play at 0.5x</button>
+  <button onclick="rewind()">Rewind 3s</button>
+  <button onclick="replayClip()">Replay</button>
+
+  <br><br>
+  <input type="text" id="userCall" placeholder="Enter your decision (e.g., red card for green)">
   <button onclick="submitCall()">Submit Call</button>
+
+  <p id="score">Score: 0</p>
+  <p id="feedback"></p>
 
   <script>
     const clips = [
@@ -33,7 +38,7 @@
       },
       {
         src: "https://files.catbox.moe/5gfn4q.mp4",
-        correctCalls: ["I dont even know. Initally yellow for grey.", "free kick for red"],
+        correctCalls: ["i dont even know. initally yellow for grey.", "free kick for red"],
         skipScoring: true
       },
       {
@@ -48,20 +53,22 @@
       }
     ];
 
-    let currentClipIndex = 0;
-    let points = 0;
+    let currentClip = 0;
+    let score = 0;
     const video = document.getElementById("clip");
-    const input = document.getElementById("inputCall");
-    const pointsDisplay = document.getElementById("pointsDisplay");
+    const feedback = document.getElementById("feedback");
 
     function loadClip() {
-      const clip = clips[currentClipIndex];
-      video.src = clip.src;
+      if (currentClip >= clips.length) {
+        feedback.textContent = "All clips completed!";
+        return;
+      }
+      video.src = clips[currentClip].src;
       video.load();
     }
 
-    function playClip(speed = 1.0) {
-      video.playbackRate = speed;
+    function playClip() {
+      video.playbackRate = 1.0;
       video.play();
     }
 
@@ -69,24 +76,53 @@
       video.pause();
     }
 
+    function playSlow() {
+      video.playbackRate = 0.25;
+      video.play();
+    }
+
+    function playHalf() {
+      video.playbackRate = 0.5;
+      video.play();
+    }
+
+    function rewind() {
+      video.currentTime = Math.max(video.currentTime - 3, 0);
+    }
+
+    function replayClip() {
+      video.currentTime = 0;
+      video.playbackRate = 1.0;
+      video.play();
+    }
+
     function submitCall() {
-      const call = input.value.toLowerCase().trim();
-      input.value = "";
-      const clip = clips[currentClipIndex];
+      const input = document.getElementById("userCall").value.toLowerCase().trim();
+      const clip = clips[currentClip];
+      if (!input) return;
+
+      let matchCount = 0;
+      clip.correctCalls.forEach(correct => {
+        if (input.includes(correct.toLowerCase())) {
+          matchCount++;
+        }
+      });
+
+      const totalCorrect = clip.correctCalls.length;
+      let earned = 0;
 
       if (!clip.skipScoring) {
-        const matched = clip.correctCalls.filter(c => call.includes(c.toLowerCase()));
-        const accuracy = matched.length / clip.correctCalls.length;
-        const awarded = 100 * accuracy;
-        points += awarded;
-        alert(`You got ${awarded} points (${Math.round(accuracy * 100)}% correct)`);
+        earned = Math.round((matchCount / totalCorrect) * 100);
+        score += earned;
+        document.getElementById("score").textContent = `Score: ${score}`;
+        feedback.textContent = `You earned ${earned} points on this call.`;
       } else {
-        alert("This clip has no scoring — opinion-based.");
+        feedback.textContent = `Call submitted. No scoring for this clip.`;
       }
 
-      currentClipIndex = (currentClipIndex + 1) % clips.length;
-      pointsDisplay.textContent = `Points: ${Math.round(points)}`;
-      loadClip();
+      currentClip++;
+      document.getElementById("userCall").value = "";
+      setTimeout(loadClip, 1500);
     }
 
     loadClip();
