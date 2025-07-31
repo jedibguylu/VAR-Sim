@@ -124,30 +124,37 @@
       const input = document.getElementById("userCall").value.toLowerCase().trim();
       const clip = clips[currentClip];
       if (!input) return;
-
+    
       let matchCount = 0;
       clip.correctCalls.forEach(correct => {
         if (input.includes(correct.toLowerCase())) {
           matchCount++;
         }
       });
-
+    
       const totalCorrect = clip.correctCalls.length;
       let earned = 0;
-
+      let message = "";
+    
       if (!clip.skipScoring) {
         earned = Math.round((matchCount / totalCorrect) * 100);
         score += earned;
+        message = `You earned ${earned} points on this call.`;
         document.getElementById("score").textContent = `Score: ${score}`;
-        feedback.textContent = `You earned ${earned} points on this call.`;
       } else {
-        feedback.textContent = `Call submitted. No scoring for this clip.`;
+        message = `Call submitted. No scoring for this clip.`;
       }
-
+    
+      const answersText = `Correct Answers: ${clip.correctCalls.join(" | ")}`;
+      feedback.innerHTML = `${message}<br>${answersText}`;
+    
       currentClip++;
       document.getElementById("userCall").value = "";
-      setTimeout(loadClip, 1500);
+    
+      // Wait 5 seconds before loading the next clip
+      setTimeout(loadClip, 5000);
     }
+
 
     loadClip();
   </script>
