@@ -19,4 +19,25 @@ const clips = [ //               https://catbox.moe/
         correctCalls: ["yellow card for red", "red card for grey", "free kick for grey"],
         skipScoring: false
       }
+      {
+        src: "https://files.catbox.moe/udri05.mp4",
+        correctCalls: ["yellow card for black", "free kick for red"],
+        skipScoring: false
+      }
+      {
+        src: "https://files.catbox.moe/s7zpnh.mp4",
+        correctCalls: ["no goal"],
+        skipScoring: false
+      }
+      {
+        src: "https://files.catbox.moe/0c540f.mp4",
+        correctCalls: ["yellow card for keeper", "retake penalty"],
+        skipScoring: false
+      }
+
+      {
+        src: "https://files.catbox.moe/a6yamn.mp4",
+        correctCalls: ["yellow card for white", "free kick for green"],
+        skipScoring: false
+      }
     ];
