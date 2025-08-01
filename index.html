@@ -27,22 +27,22 @@
   <br>
   <h3>Make sure to enter who gets what punishment (if any), and what the restart is.</h3>
   <br>
-  <input type="text" id="userCall" placeholder="Enter your decision (e.g., red card for green, goal, free kick for grey, offside)">
+  <input type="text" id="userCall" placeholder="Enter your decision (e.g., red card for keeper, no goal, free kick for grey, offside, play on)">
   <button onclick="submitCall()">Submit Call</button>
 
   <p id="score">Score: 0</p>
   <p id="feedback"></p>
 
   <script>
-    const originalClips = [
+    const clips = [ //               https://catbox.moe/
       {
         src: "https://files.catbox.moe/e9g8y1.mp4",
-        correctCalls: ["red card for keeper", "goal"],
+        correctCalls: ["yellow card for keeper", "goal"],
         skipScoring: false
       },
       {
         src: "https://files.catbox.moe/5gfn4q.mp4",
-        correctCalls: ["i dont even know. initally yellow for grey.", "free kick for red"],
+        correctCalls: ["I dont even know. Initally yellow for grey.", "free kick for red"],
         skipScoring: true
       },
       {
@@ -53,6 +53,26 @@
       {
         src: "https://files.catbox.moe/teeqkh.mp4",
         correctCalls: ["yellow card for red", "red card for grey", "free kick for grey"],
+        skipScoring: false
+      },
+      {
+        src: "https://files.catbox.moe/udri05.mp4",
+        correctCalls: ["yellow card for black", "free kick for red"],
+        skipScoring: false
+      },
+      {
+        src: "https://files.catbox.moe/s7zpnh.mp4",
+        correctCalls: ["no goal"],
+        skipScoring: false
+      },
+      {
+        src: "https://files.catbox.moe/0c540f.mp4",
+        correctCalls: ["yellow card for keeper", "retake penalty"],
+        skipScoring: false
+      },
+      {
+        src: "https://files.catbox.moe/a6yamn.mp4",
+        correctCalls: ["yellow card for white", "free kick for green"],
         skipScoring: false
       }
     ];
