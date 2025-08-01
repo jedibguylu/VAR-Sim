@@ -5,7 +5,15 @@
   <title>VAR Decision Simulator</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #111; color: white; }
-    video { width: 100%; max-width: 800px; margin-bottom: 10px; border: 2px solid #ccc; }
+    video {
+      max-width: 100%;
+      max-height: 50vh; /* video will never take more than half the screen height */
+      width: auto;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      background: black;
+    }
     input[type="text"] { width: 60%; padding: 10px; }
     button { padding: 10px 15px; margin: 5px; }
     #score { font-size: 20px; margin-top: 15px; }
@@ -54,24 +62,25 @@
         src: "https://files.catbox.moe/teeqkh.mp4",
         correctCalls: ["yellow card for red", "red card for grey", "free kick for grey"],
         skipScoring: false
-      },
+      }
       {
         src: "https://files.catbox.moe/udri05.mp4",
         correctCalls: ["yellow card for black", "free kick for red"],
         skipScoring: false
-      },
+      }
       {
         src: "https://files.catbox.moe/s7zpnh.mp4",
         correctCalls: ["no goal"],
         skipScoring: false
-      },
+      }
       {
-        src: "https://files.catbox.moe/0c540f.mp4",
+        src: "https://files.catbox.moe/tqhadk.mp4",
         correctCalls: ["yellow card for keeper", "retake penalty"],
         skipScoring: false
-      },
+      }
+
       {
-        src: "https://files.catbox.moe/a6yamn.mp4",
+        src: "https://files.catbox.moe/ijxdmp.mp4",
         correctCalls: ["yellow card for white", "free kick for green"],
         skipScoring: false
       }
