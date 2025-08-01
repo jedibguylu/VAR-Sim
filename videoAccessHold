@@ -30,13 +30,13 @@ const clips = [ //               https://catbox.moe/
         skipScoring: false
       }
       {
-        src: "https://files.catbox.moe/0c540f.mp4",
+        src: "https://files.catbox.moe/tqhadk.mp4",
         correctCalls: ["yellow card for keeper", "retake penalty"],
         skipScoring: false
       }
 
       {
-        src: "https://files.catbox.moe/a6yamn.mp4",
+        src: "https://files.catbox.moe/ijxdmp.mp4",
         correctCalls: ["yellow card for white", "free kick for green"],
         skipScoring: false
       }
