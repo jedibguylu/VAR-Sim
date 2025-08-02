@@ -110,15 +110,7 @@
           <option value="play on">Play On</option>
           <option value="retake penalty">Retake Penalty</option>
         </select>
-        <input type="text" class="decisionPlayer" placeholder="Enter player/team (e.g., keeper, red)">
-        <select class="restartType">
-          <option value="">--Select Restart--</option>
-          <option value="free kick">Free Kick</option>
-          <option value="penalty">Penalty</option>
-          <option value="drop ball">Drop Ball</option>
-          <option value="none">None</option>
-        </select>
-        <input type="text" class="restartTeam" placeholder="Restart team (e.g., red)"><br>
+        <input type="text" class="decisionPlayer" placeholder="Enter player/team (e.g., keeper, red)"><br>
       `;
       container.appendChild(div);
     }
@@ -133,10 +125,13 @@
       for (let i = 0; i < types.length; i++) {
         const d = types[i].value.trim().toLowerCase();
         const p = players[i].value.trim().toLowerCase();
-        const r = restarts[i].value.trim().toLowerCase();
-        const t = teams[i].value.trim().toLowerCase();
         if (d && p) userInputs.push(`${d} for ${p}`);
         else if (d) userInputs.push(d);
+      }
+
+      if (restarts.length > 0 && restarts[0].value) {
+        const r = restarts[0].value.trim().toLowerCase();
+        const t = teams[0].value.trim().toLowerCase();
         if (r && t) userInputs.push(`${r} for ${t}`);
         else if (r) userInputs.push(r);
       }
@@ -169,11 +164,36 @@
       container.innerHTML = "";
       addDecisionSet();
 
+      const restartDiv = document.createElement("div");
+      restartDiv.innerHTML = `
+        <select class="restartType">
+          <option value="">--Select Restart--</option>
+          <option value="free kick">Free Kick</option>
+          <option value="penalty">Penalty</option>
+          <option value="drop ball">Drop Ball</option>
+          <option value="none">None</option>
+        </select>
+        <input type="text" class="restartTeam" placeholder="Restart team (e.g., red)"><br>
+      `;
+      container.appendChild(restartDiv);
+
       setTimeout(loadClip, 5000);
     }
 
     loadClip();
     addDecisionSet();
+    const restartDiv = document.createElement("div");
+    restartDiv.innerHTML = `
+      <select class="restartType">
+        <option value="">--Select Restart--</option>
+        <option value="free kick">Free Kick</option>
+        <option value="penalty">Penalty</option>
+        <option value="drop ball">Drop Ball</option>
+        <option value="none">None</option>
+      </select>
+      <input type="text" class="restartTeam" placeholder="Restart team (e.g., red)"><br>
+    `;
+    container.appendChild(restartDiv);
   </script>
 </body>
 </html>
