@@ -6,15 +6,14 @@
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #111; color: white; }
     video {
-      max-width: 100%;
-      max-height: 50vh; /* video will never take more than half the screen height */
-      width: auto;
-      height: auto;
+      width: 100%;
+      max-height: 50vh;
+      object-fit: contain;
       display: block;
       margin: 0 auto;
       background: black;
     }
-    input[type="text"] { width: 60%; padding: 10px; }
+    select, input[type="text"] { padding: 10px; margin: 5px; }
     button { padding: 10px 15px; margin: 5px; }
     #score { font-size: 20px; margin-top: 15px; }
   </style>
@@ -33,57 +32,26 @@
   <button onclick="nextFrame()">⏩ Next Frame</button>
 
   <br>
-  <h3>Make sure to enter who gets what punishment (if any), and what the restart is.</h3>
-  <br>
-  <input type="text" id="userCall" placeholder="Enter your decision (e.g., red card for keeper, no goal, free kick for grey, offside, play on)">
+  <h3>Choose the decisions for the clip:</h3>
+
+  <div id="decisionsContainer"></div>
+
+  <button onclick="addDecisionSet()">Add Another Decision</button>
   <button onclick="submitCall()">Submit Call</button>
 
   <p id="score">Score: 0</p>
   <p id="feedback"></p>
 
   <script>
-    const clips = [ //               https://catbox.moe/
-      {
-        src: "https://files.catbox.moe/e9g8y1.mp4",
-        correctCalls: ["yellow card for keeper", "goal"],
-        skipScoring: false
-      },
-      {
-        src: "https://files.catbox.moe/5gfn4q.mp4",
-        correctCalls: ["I dont even know. Initally yellow for grey.", "free kick for red"],
-        skipScoring: true
-      },
-      {
-        src: "https://files.catbox.moe/lr37rd.mp4",
-        correctCalls: ["red card for green", "free kick for yellow"],
-        skipScoring: false
-      },
-      {
-        src: "https://files.catbox.moe/teeqkh.mp4",
-        correctCalls: ["yellow card for red", "red card for grey", "free kick for grey"],
-        skipScoring: false
-      },
-      {
-        src: "https://files.catbox.moe/udri05.mp4",
-        correctCalls: ["yellow card for black", "free kick for red"],
-        skipScoring: false
-      },
-      {
-        src: "https://files.catbox.moe/s7zpnh.mp4",
-        correctCalls: ["no goal"],
-        skipScoring: false
-      },
-      {
-        src: "https://files.catbox.moe/tqhadk.mp4",
-        correctCalls: ["yellow card for keeper", "retake penalty"],
-        skipScoring: false
-      },
-
-      {
-        src: "https://files.catbox.moe/ijxdmp.mp4",
-        correctCalls: ["yellow card for white", "free kick for green"],
-        skipScoring: false
-      }
+    const clips = [
+      { src: "https://files.catbox.moe/e9g8y1.mp4", correctCalls: ["yellow card for keeper", "goal"], skipScoring: false },
+      { src: "https://files.catbox.moe/5gfn4q.mp4", correctCalls: ["I dont even know. Initally yellow for grey.", "free kick for red"], skipScoring: true },
+      { src: "https://files.catbox.moe/lr37rd.mp4", correctCalls: ["red card for green", "free kick for yellow"], skipScoring: false },
+      { src: "https://files.catbox.moe/teeqkh.mp4", correctCalls: ["yellow card for red", "red card for grey", "free kick for grey"], skipScoring: false },
+      { src: "https://files.catbox.moe/udri05.mp4", correctCalls: ["yellow card for black", "free kick for red"], skipScoring: false },
+      { src: "https://files.catbox.moe/s7zpnh.mp4", correctCalls: ["no goal"], skipScoring: false },
+      { src: "https://files.catbox.moe/tqhadk.mp4", correctCalls: ["yellow card for keeper", "retake penalty"], skipScoring: false },
+      { src: "https://files.catbox.moe/ijxdmp.mp4", correctCalls: ["yellow card for white", "free kick for green"], skipScoring: false }
     ];
 
     function shuffle(array) {
@@ -99,6 +67,7 @@
     let score = 0;
     const video = document.getElementById("clip");
     const feedback = document.getElementById("feedback");
+    const container = document.getElementById("decisionsContainer");
 
     function loadClip() {
       if (currentClip >= clips.length) {
@@ -109,63 +78,81 @@
       video.load();
     }
 
-    function playClip() {
-      video.playbackRate = 1.0;
-      video.play();
-    }
-
-    function pauseClip() {
-      video.pause();
-    }
-
-    function playSlow() {
-      video.playbackRate = 0.25;
-      video.play();
-    }
-
-    function playHalf() {
-      video.playbackRate = 0.5;
-      video.play();
-    }
-
-    function rewind() {
-      video.currentTime = Math.max(video.currentTime - 3, 0);
-    }
-
-    function replayClip() {
-      video.currentTime = 0;
-      video.playbackRate = 1.0;
-      video.play();
-    }
+    function playClip() { video.playbackRate = 1.0; video.play(); }
+    function pauseClip() { video.pause(); }
+    function playSlow() { video.playbackRate = 0.25; video.play(); }
+    function playHalf() { video.playbackRate = 0.5; video.play(); }
+    function rewind() { video.currentTime = Math.max(video.currentTime - 3, 0); }
+    function replayClip() { video.currentTime = 0; video.playbackRate = 1.0; video.play(); }
 
     function prevFrame() {
       if (!video.paused) return;
-      const fps = 30; // estimate
+      const fps = 30;
       video.currentTime = Math.max(0, video.currentTime - 1 / fps);
     }
 
     function nextFrame() {
       if (!video.paused) return;
-      const fps = 30; // estimate
+      const fps = 30;
       video.currentTime = Math.min(video.duration, video.currentTime + 1 / fps);
     }
 
+    function addDecisionSet() {
+      const div = document.createElement("div");
+      div.innerHTML = `
+        <select class="decisionType">
+          <option value="">--Select Decision--</option>
+          <option value="yellow card">Yellow Card</option>
+          <option value="red card">Red Card</option>
+          <option value="no card">No Card</option>
+          <option value="no goal">No Goal</option>
+          <option value="goal">Goal</option>
+          <option value="play on">Play On</option>
+          <option value="retake penalty">Retake Penalty</option>
+        </select>
+        <input type="text" class="decisionPlayer" placeholder="Enter player/team (e.g., keeper, red)">
+        <select class="restartType">
+          <option value="">--Select Restart--</option>
+          <option value="free kick">Free Kick</option>
+          <option value="penalty">Penalty</option>
+          <option value="drop ball">Drop Ball</option>
+          <option value="none">None</option>
+        </select>
+        <input type="text" class="restartTeam" placeholder="Restart team (e.g., red)"><br>
+      `;
+      container.appendChild(div);
+    }
+
     function submitCall() {
-      const input = document.getElementById("userCall").value.toLowerCase().trim();
+      const types = document.querySelectorAll(".decisionType");
+      const players = document.querySelectorAll(".decisionPlayer");
+      const restarts = document.querySelectorAll(".restartType");
+      const teams = document.querySelectorAll(".restartTeam");
+
+      let userInputs = [];
+      for (let i = 0; i < types.length; i++) {
+        const d = types[i].value.trim().toLowerCase();
+        const p = players[i].value.trim().toLowerCase();
+        const r = restarts[i].value.trim().toLowerCase();
+        const t = teams[i].value.trim().toLowerCase();
+        if (d && p) userInputs.push(`${d} for ${p}`);
+        else if (d) userInputs.push(d);
+        if (r && t) userInputs.push(`${r} for ${t}`);
+        else if (r) userInputs.push(r);
+      }
+
+      const inputStr = userInputs.join(" | ");
       const clip = clips[currentClip];
-      if (!input) return;
-    
+
       let matchCount = 0;
       clip.correctCalls.forEach(correct => {
-        if (input.includes(correct.toLowerCase())) {
-          matchCount++;
-        }
+        if (inputStr.includes(correct.toLowerCase())) matchCount++;
       });
-    
+
       const totalCorrect = clip.correctCalls.length;
       let earned = 0;
       let message = "";
-    
+
       if (!clip.skipScoring) {
         earned = Math.round((matchCount / totalCorrect) * 100);
         score += earned;
@@ -174,19 +161,19 @@
       } else {
         message = `Call submitted. No scoring for this clip.`;
       }
-    
+
       const answersText = `Correct Answers: ${clip.correctCalls.join(" | ")}`;
       feedback.innerHTML = `${message}<br>${answersText}`;
-    
+
       currentClip++;
-      document.getElementById("userCall").value = "";
-    
-      // Wait 5 seconds before loading the next clip
+      container.innerHTML = "";
+      addDecisionSet();
+
       setTimeout(loadClip, 5000);
     }
 
-
     loadClip();
+    addDecisionSet();
   </script>
 </body>
 </html>
