@@ -106,9 +106,7 @@
           <option value="red card">Red Card</option>
           <option value="no card">No Card</option>
           <option value="no goal">No Goal</option>
-          <option value="goal">Goal</option>
           <option value="play on">Play On</option>
-          <option value="retake penalty">Retake Penalty</option>
         </select>
         <input type="text" class="decisionPlayer" placeholder="Enter player/team (e.g., keeper, red)"><br>
       `;
@@ -170,7 +168,10 @@
           <option value="">--Select Restart--</option>
           <option value="free kick">Free Kick</option>
           <option value="penalty">Penalty</option>
+          <option value="goal">Goal</option>
           <option value="drop ball">Drop Ball</option>
+          <option value="goalkick">Goalkick</option>
+          <option value="corner">Corner</option>
           <option value="none">None</option>
         </select>
         <input type="text" class="restartTeam" placeholder="Restart team (e.g., red)"><br>
@@ -185,11 +186,14 @@
     const restartDiv = document.createElement("div");
     restartDiv.innerHTML = `
       <select class="restartType">
-        <option value="">--Select Restart--</option>
-        <option value="free kick">Free Kick</option>
-        <option value="penalty">Penalty</option>
-        <option value="drop ball">Drop Ball</option>
-        <option value="none">None</option>
+          <option value="">--Select Restart--</option>
+          <option value="free kick">Free Kick</option>
+          <option value="penalty">Penalty</option>
+          <option value="goal">Goal</option>
+          <option value="drop ball">Drop Ball</option>
+          <option value="goalkick">Goalkick</option>
+          <option value="corner">Corner</option>
+          <option value="none">None</option>
       </select>
       <input type="text" class="restartTeam" placeholder="Restart team (e.g., red)"><br>
     `;
@@ -199,5 +203,6 @@
   <h5>***If you notice the call check system is clearly wrong let me know.***</h5>
 </body>
 </html>
+
 
 
